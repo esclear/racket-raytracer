@@ -1,6 +1,6 @@
 #lang racket
 
-(require racket/draw "data-structures.rkt" "geometry.rkt")
+(require racket/draw "graphics.rkt" "geometry.rkt")
 
 ; hehe, that name :)
 (define (make-scene)
@@ -16,7 +16,7 @@
            (scene (make-scene))
            (image (make-bitmap (camera-width cam) (camera-height cam))))
     (for ([x (range (camera-width cam))])
-      (printf "Rendered column ~s of ~s~n" x (camera-width cam))
+      ;(printf "Rendered column ~s of ~s~n" x (camera-width cam))
       (for ([y (range (camera-height cam))])
         'tbd
         ))
@@ -24,4 +24,4 @@
     image
     ))
 
-(render)
+(time (render))
