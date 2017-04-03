@@ -7,9 +7,13 @@
   'tbd
   )
 (define (setup-camera)
-  ; glorious 800 x 600 resolution
-  (camera (origin) (zerovec) 800 600 90)
-  )
+  (camera (origin)
+          ; Vectors describing the rotation of the camera,
+          ; to be produced by a custom translation matrix
+          ; or simmilar.
+          (vec 0 0 -1) (vec 4 0 0) (vec 3 1 0)
+          ; The glorious 800x600 pixel resolution
+          800 600))
 
 (define (render)
   (letrec ((cam   (setup-camera))

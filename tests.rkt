@@ -7,3 +7,7 @@
 
 (define (approx-eq-e a b epsilon)
   (< (abs (- a b)) epsilon))
+
+(require "tests/geometry.rkt")
+
+(test)

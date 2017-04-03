@@ -9,11 +9,13 @@
 ;;
 ;; THREE-DIMENSIONAL VECTOR
 ;;
-(struct vec (x y z)  #:methods gen:custom-write
+(struct vec (x y z)
+  #:methods gen:custom-write
   [(define write-proc
      (make-constructor-style-printer
       (lambda (obj) 'vec)
-      (lambda (obj) (list (vec-x obj) (vec-y obj) (vec-z obj)))))])
+      (lambda (obj) (list (vec-x obj) (vec-y obj) (vec-z obj)))))]
+  #:transparent)
 
 (define (origin)
   (point 0 0 0))
