@@ -1,7 +1,7 @@
 #lang racket
 (provide (all-defined-out))
 
-(require  test-engine/racket-tests "../geometry.rkt")
+(require  test-engine/racket-tests "../geometry.rkt" "../graphics.rkt")
 
 (check-expect (zerovec) (vec 0 0 0))
 (check-expect (vec-len (zerovec)) 0)
@@ -27,3 +27,11 @@
 (check-expect (vec-sub (vec 4 5 6) (vec 1 2 3) (zerovec)) (vec 3 3 3))
 
 (check-expect (vec-scale (vec 1 2 3) 2) (vec 2 4 6))
+
+; Vector reflection
+
+(check-expect (vec-reflect (vec 1 -1 0) (vec 0 1 0)) (vec 1 1 0))
+(check-expect (vec-reflect (vec 1 1 -1) (vec 0 0 1)) (vec 1 1 1))
+(check-expect (vec-reflect (vec 0 0 -1) (vec 0 0 1)) (vec 0 0 1))
+
+(check-expect (vec-reflect (vec 1 -3 4) (vec 2 4 1)) (vec 2.1428571428571432 -0.7142857142857135 4.571428571428571))

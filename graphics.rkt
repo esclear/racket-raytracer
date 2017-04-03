@@ -12,10 +12,12 @@
 
 (struct scene (camera objects))
 
-; reflect a vec v at a surface with the given normal
-; TODO: Implement this
-(define (reflect v normal)
-  (zerovec))
+; reflect the vector vec at a surface with the given
+; normal
+(define (vec-reflect vec normal)
+  (let ((normalized-normal (vec-normalize normal)))
+  (vec-sub vec
+           (vec-scale normalized-normal (* 2 (vec-dot vec normalized-normal))))))
 
 (define (cast-primary-ray cam x y)
   (let ((width     (camera-width cam))

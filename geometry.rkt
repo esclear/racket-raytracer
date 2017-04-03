@@ -3,8 +3,10 @@
 
 (provide (all-defined-out))
 
-(struct point (x y z))
-(struct ray (point direction))
+(struct point (x y z)
+  #:transparent)
+(struct ray (point direction)
+  #:transparent)
 
 ;;
 ;; THREE-DIMENSIONAL VECTOR
@@ -76,3 +78,9 @@
     (vec (- (* ya zb) (* za yb))
          (- (* za xb) (* xa zb))
          (- (* xa yb) (* ya xb)))))
+
+; Convert a point to a vector
+(define (point->vec point)
+  (vec (point-x point)
+       (point-y point)
+       (point-z point)))

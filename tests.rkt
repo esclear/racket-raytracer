@@ -1,6 +1,6 @@
 #lang racket
 
-(require test-engine/racket-tests)
+(require test-engine/racket-gui)
 
 (define (approx-eq a b)
   (approx-eq-e a b 1E-5))
