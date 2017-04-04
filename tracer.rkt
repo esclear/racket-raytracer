@@ -4,8 +4,13 @@
 
 ; hehe, that name :)
 (define (make-scene)
-  (list (sphere (point 0 0 2) 1)
-        ))
+  (let ((red   (material (make-object color% 255 0 0)))
+        (green (material (make-object color% 0 255 0)))
+        (blue  (material (make-object color% 0 0 255)))
+        (grey  (material (make-object color% 127 127 127))))
+  (list (sphere (point 0 1 2) 1 red)
+        (plane (point 0 0 0) (vec 0 1 0) grey)
+        )))
 
 (define (setup-camera)
   (camera (origin)
@@ -24,11 +29,12 @@
          (bdc (new bitmap-dc% [bitmap image])))
     (for ([x (range (camera-width cam))])
       (for ([y (range (camera-height cam))])
-        (begin
-          (if (intersects (cast-primary-ray cam x y) sphere)
-              (send bdc set-brush "black" 'solid)
-              (send bdc set-brush "white" 'solid))
-          (send bdc draw-rectangle x y 1 1)
+        (let ((intersection (intersects (cast-primary-ray cam x y) sphere)))
+          (if intersection
+              (begin
+                (send bdc set-brush (material-color (cdr intersection)) 'solid)
+                (send bdc draw-rectangle x y 1 1))
+              'nop)
           )))
     (displayln "Done, look at that great rendering:")
     image
