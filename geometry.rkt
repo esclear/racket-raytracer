@@ -30,7 +30,7 @@
   (let ((a (vec-x v))
         (b (vec-y v))
         (c (vec-z v)))
-  (sqrt (+ (* a a) (* b b) (* c c)))))
+    (sqrt (+ (* a a) (* b b) (* c c)))))
 
 ; Add multiple vectors
 (define (vec-add . vecs)
@@ -73,8 +73,8 @@
 ; Calculate the cross-product of two vectors a and b
 (define (vec-cross a b)
   (let ((xa (vec-x a)) (xb (vec-x b))
-        (ya (vec-y a)) (yb (vec-y b))
-        (za (vec-z a)) (zb (vec-z b)))
+                       (ya (vec-y a)) (yb (vec-y b))
+                       (za (vec-z a)) (zb (vec-z b)))
     (vec (- (* ya zb) (* za yb))
          (- (* za xb) (* xa zb))
          (- (* xa yb) (* ya xb)))))

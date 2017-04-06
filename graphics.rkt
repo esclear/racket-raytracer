@@ -18,8 +18,8 @@
 ; normal
 (define (vec-reflect vec normal)
   (let ((normalized-normal (vec-normalize normal)))
-  (vec-sub vec
-           (vec-scale normalized-normal (* 2 (vec-dot vec normalized-normal))))))
+    (vec-sub vec
+             (vec-scale normalized-normal (* 2 (vec-dot vec normalized-normal))))))
 
 (define (cast-primary-ray cam x y)
   (let ((width     (camera-width cam))
@@ -43,19 +43,32 @@
 (define (intersect-ray ray scene)
   (let* ( (objects (scene-objects scene))
           (ray-intersections (map (lambda (obj) (send obj intersect ray)) objects)) )
-    (filter (lambda (x) (and (not (not x)) (positive? (intersection-distance x)))) ray-intersections)))
+    (filter (lambda (x) (and x (positive? (intersection-distance x)))) ray-intersections)))
 
 ; Trace the given ray
-(define (trace-ray ray scene)
-  (let* ( (intersections (intersect-ray ray scene)) )
+(define (trace-ray tray scene)
+  (let* ( (intersections (intersect-ray tray scene)) )
     (if (not (null? intersections))
-        (let ((intersection (smallest intersection-distance intersections))
-              (lights (scene-lights scene)))
-          (for ([light lights])
-            ;(define light_power (vec-dot ())
-            'nop
-            )
-          intersection
+        (let* ( (ray-intersection (smallest intersection-distance intersections))
+                (iobject (intersection-object ray-intersection))
+                (ipoint  (intersection-point  ray-intersection))
+                (inormal (intersection-normal ray-intersection))
+                
+                (lights (scene-lights scene)) )
+          ;(for ([light lights])
+          (let ((light (car lights)))
+            ; Here we use lambert's cosine law, as explained in
+            ; https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/diffuse-lambertian-shading
+            (let* ( (to-light-direction (vec-reverse (light-direction light)))
+                    (shadow-ray (ray ipoint to-light-direction))
+                    (power (* (vec-dot inormal to-light-direction) (light-intensity light)))
+                    (reflected (/ (material-reflectivity (send iobject get-material)) pi))
+                    (color (material-color (send iobject get-material))) )
+
+              (color-scale (* power reflected)
+                           (color-mul color (light-color light)))
+              ))
+          ;(material-color (send iobject get-material))
           )
         #f
-    )))
+        )))

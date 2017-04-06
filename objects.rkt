@@ -3,8 +3,10 @@
 
 (require "geometry.rkt")
 
-(struct material (color reflectivity))
-(struct intersection (distance point normal object color))
+(struct material (color reflectivity)
+  #:transparent)
+(struct intersection (distance point normal object)
+  #:transparent)
 
 ;
 ; RAYTRACABLE OBJECTS (CALLED ENTITIES HERE)
@@ -56,23 +58,21 @@
              (d2  (- (vec-dot con con) (* adj adj))))
 
         (and (< d2 sqr)
-              (let* ((ts (sqrt (- sqr d2)))
-                     (ta (- adj ts))
-                     (tb (+ adj ts))
-                     (distance
-                      (cond
-                        ((and (< ta 0) (< tb 0)) #f)
-                        ((< ta 0) tb)
-                        ((< tb 0) ta)
-                        (else (if (< ta tb) ta tb)
-                              ))))
-                (let ((point (vec-add (point->vec (ray-point ray))
-                                       (vec-scale (ray-direction ray) distance))))
-                  (intersection distance
-                                point
-                                (intersection-normal point)
-                                this
-                                (material-color (send this get-material))))))))
+             (let* ((ts (sqrt (- sqr d2)))
+                    (ta (- adj ts))
+                    (tb (+ adj ts))
+                    (distance
+                     (cond
+                       ((and (< ta 0) (< tb 0)) #f)
+                       ((< ta 0) tb)
+                       ((< tb 0) ta)
+                       (else (if (< ta tb) ta tb)))))
+               (let ((point (vec-add (point->vec (ray-point ray))
+                                     (vec-scale (ray-direction ray) distance))))
+                 (intersection distance
+                               point
+                               (intersection-normal point)
+                               this))))))
 
     (define/public (intersection-normal point)
       (vec-normalize (vec-sub point
@@ -112,10 +112,7 @@
                (intersection distance
                              point
                              (intersection-normal point)
-                             this
-                             (material-color (send this get-material)))))))
+                             this)))))
 
     (define/public (intersection-normal point)
-      (vec-normalize current-normal))))
-
-;(struct triagle (one two three))
+      (vec-reverse (vec-normalize current-normal)))))
