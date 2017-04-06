@@ -7,10 +7,17 @@
   (let ((red   (material (make-object color% 255 0 0)))
         (green (material (make-object color% 0 255 0)))
         (blue  (material (make-object color% 0 0 255)))
-        (grey  (material (make-object color% 127 127 127))))
-  (list (sphere (point 0 1 2) 1 red)
-        (sphere (point 0 1.1 2.8) 1.w blue)
-        (plane (point 0 1 0) (vec 0 1 0) grey)
+        (grey  (material (make-object color% 127 127 127)))
+        (white (material (make-object color% 255 255 255))))
+  (list (sphere (point 0 1 1.5) 1 grey)
+        (sphere (point 1 0.75 3.2) 1.2 blue)
+
+        (plane (point 0 0 0) (vec 0 1 0) white)
+        (plane (point 0 0 5) (vec 0 0 1) white)
+        (plane (point 0 5 0) (vec 0 1 0) white)
+
+        (plane (point 3 1 0) (vec 1 0 0) red)
+        (plane (point -3 1 0) (vec 1 0 0) green)
         )))
 
 (define (setup-camera)
@@ -18,7 +25,7 @@
           ; Vectors describing the rotation of the camera,
           ; to be produced by a custom translation matrix
           ; or simmilar.
-          (vec 0 0 1) (vec 4 0 0) (vec 0 3 0)
+          (vec 0 0 1) (vec (/ 4 3) 0 0) (vec 0 1 0)
           ; The glorious 800x600 pixel resolution
           800 600))
 
