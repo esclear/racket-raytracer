@@ -11,7 +11,7 @@
 (define raytrace-interface (interface ()
                              intersect intersection-normal))
 
-(define entity%
+(define renderable%
   (class object%
     (init material)
 
@@ -27,7 +27,7 @@
 
 ; A sphere with a given center point and radius
 (define sphere%
-  (class* entity% (raytrace-interface)
+  (class* renderable% (raytrace-interface)
 
     (init center radius)
 
@@ -74,7 +74,7 @@
 
 ; A plane define by a point on that plane and a normal
 (define plane%
-  (class* entity% (raytrace-interface)
+  (class* renderable% (raytrace-interface)
 
     (init point normal)
 

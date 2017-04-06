@@ -1,7 +1,7 @@
 #lang racket
 (provide (all-defined-out))
 
-(require "geometry.rkt")
+(require "geometry.rkt" "helpers.rkt")
 
 (struct camera (position
                 ; These vectors must be normalized
@@ -10,7 +10,9 @@
                 ; image being rendered
                 width height))
 
-(struct scene (camera objects))
+(struct light (direction))
+
+(struct scene (camera objects lights))
 
 ; reflect the vector vec at a surface with the given
 ; normal
@@ -36,3 +38,14 @@
                                         (- (/ (* 2 x) width ) 1))
                              (vec-scale upvec
                                         (- (/ (* 2 y) height) 1)))))))
+
+; Trace the given ray
+(define (trace-ray ray scene)
+  (let* ( (objects (scene-objects scene))
+          (ray-intersections (map (lambda (obj) (send obj intersect ray)) objects))
+          (intersections (filter (lambda (x) (and (not (not x)) (positive? (car x)))) ray-intersections)) )
+    (if (and intersections (not (null? intersections)) (pair? (car intersections)))
+        (cdr (smallest car intersections))
+        #f
+    )
+  ))
