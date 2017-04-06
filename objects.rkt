@@ -3,43 +3,106 @@
 
 (require "geometry.rkt")
 
-(struct material (color))
+(struct material (color reflectivity))
 
-(struct sphere (center radius material))
+;
+; RAYTRACABLE OBJECTS (CALLED ENTITIES HERE)
+;
+(define raytrace-interface (interface ()
+                             intersect intersection-normal))
 
-(struct plane (point normal material))
+(define entity%
+  (class object%
+    (init material)
 
+    (define current-material material)
 
-(define (intersects ray object)
-  (cond
-    ((sphere? object)
-     (let* ((rad (sphere-radius object))
-            (sqr (* rad rad))
+    (super-new)
+
+    (define/public (get-material)
+      current-material)
+
+    (define/public (set-material mat)
+      (set! current-material mat))))
+
+; A sphere with a given center point and radius
+(define sphere%
+  (class* entity% (raytrace-interface)
+
+    (init center radius)
+
+    (define current-center center)
+    (define current-radius radius)
+
+    (super-new)
+
+    (define/public (get-center)
+      current-center)
+    (define/public (get-radius)
+      current-radius)
+
+    (define/public (set-center center)
+      (set! current-center center))
+    (define/public (set-radius radius)
+      (set! current-radius radius))
+
+    (define/public (intersect ray)
+      (let* ((sqr (* current-radius current-radius))
              
-            (con (vec-sub (point->vec (sphere-center object))
-                          (point->vec (ray-point ray))))
-            (adj (vec-dot con (ray-direction ray)))
-            (d2  (- (vec-dot con con) (* adj adj))))
+             (con (vec-sub (point->vec current-center)
+                           (point->vec (ray-point ray))))
+             (adj (vec-dot con (ray-direction ray)))
+             (d2  (- (vec-dot con con) (* adj adj))))
 
-       (and (< d2 sqr)
-            (cons
-             (let* ((ts (sqrt (- sqr d2)))
-                    (ta (- adj ts))
-                    (tb (+ adj ts)))
-               (cond
-                 ((and (< ta 0) (< tb 0)) #f)
-                 ((< ta 0) tb)
-                 ((< tb 0) ta)
-                 (else (if (< ta tb) ta tb)
-                       )))
-             (sphere-material object)))))
-    ((plane? object)
-     (let ((normal (plane-normal object))
-           (ppoint (point->vec (plane-point object)))
-           (rdirec (ray-direction ray))
-           (rpoint (point->vec (ray-point ray))))
-       (and (not (zero? (vec-dot normal rdirec)))
-            (cons (/ (vec-dot (vec-sub ppoint rpoint) normal)
-                     (vec-dot rdirec normal))
-                  (plane-material object)))))
-    (else #f)))
+        (and (< d2 sqr)
+             (cons
+              (let* ((ts (sqrt (- sqr d2)))
+                     (ta (- adj ts))
+                     (tb (+ adj ts)))
+                (cond
+                  ((and (< ta 0) (< tb 0)) #f)
+                  ((< ta 0) tb)
+                  ((< tb 0) ta)
+                  (else (if (< ta tb) ta tb)
+                        )))
+              (send this get-material)))))
+
+    (define/public (intersection-normal point)
+      (vec-normalize (vec-sub (point->vec point)
+                              (point->vec current-center))))))
+
+
+; A plane define by a point on that plane and a normal
+(define plane%
+  (class* entity% (raytrace-interface)
+
+    (init point normal)
+
+    (define current-point point)
+    (define current-normal normal)
+
+    (super-new)
+
+    (define/public (get-point)
+      current-point)
+    (define/public (get-normal)
+      current-normal)
+
+    (define/public (set-point point)
+      (set! current-point point))
+    (define/public (set-normal normal)
+      (set! current-normal normal))
+
+    (define/public (intersect ray)
+      (let ((ppoint (point->vec current-point))
+            (rdirec (ray-direction ray))
+            (rpoint (point->vec (ray-point ray))))
+        (and (not (zero? (vec-dot current-normal rdirec)))
+             (cons (/ (vec-dot (vec-sub ppoint rpoint) current-normal)
+                      (vec-dot rdirec current-normal))
+                   (send this get-material)))))
+
+    (define/public (intersection-normal point)
+      (vec-normalize current-normal))))
+
+;(struct triagle (one two three))
