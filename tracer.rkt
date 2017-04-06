@@ -4,12 +4,12 @@
 
 ; hehe, that name :)
 (define (make-scene)
-  (let ((red   (material (make-object color% 255 0 0) 1))
-        (green (material (make-object color% 0 255 0) 1))
-        (blue  (material (make-object color% 0 0 255) 1))
+  (let ((red    (material (make-object color% 255 0 0) 1))
+        (green  (material (make-object color% 0 255 0) 1))
+        (blue   (material (make-object color% 0 0 255) 1))
         (yellow (material (make-object color% 255 255 0) 1))
-        (grey  (material (make-object color% 127 127 127) 1))
-        (white (material (make-object color% 255 255 255) 1)))
+        (grey   (material (make-object color% 127 127 127) 1))
+        (white  (material (make-object color% 255 255 255) 1)))
     (scene (setup-camera)
            (list (new sphere% [center (point 0 1 1.5)] [radius 1] [material grey])
                  (new sphere% [center (point 1 0.75 3.2)] [radius 1.2] [material blue])
@@ -20,10 +20,10 @@
 
                  (new plane% [point (point 0 0 -2)] [normal (vec 0 0 1)] [material yellow])
 
-                 (new plane% [point (point 3 1 0)] [normal (vec 1 0 0)] [material red])
+                 (new plane% [point (point 3 1 0)]  [normal (vec 1 0 0)] [material red])
                  (new plane% [point (point -3 1 0)] [normal (vec 1 0 0)] [material green])
                  )
-           (list ))))
+           (list (light (vector 0.1 0.2 2) white 1)))))
 
 (define (setup-camera)
   (camera (origin)
@@ -41,10 +41,14 @@
          (bdc (new bitmap-dc% [bitmap image])))
     (for ([y (range (camera-height cam))])
       (for ([x (range (camera-width cam))])
-        (let ((ray (cast-primary-ray cam x y)))
-          (send bdc set-brush (material-color (trace-ray ray scene)) 'solid)
-          (send bdc draw-rectangle x y 1 1))
-        ))
+        (let* ((ray (cast-primary-ray cam x y))
+               (intersection (trace-ray ray scene)))
+          (if intersection
+              (begin
+                (send bdc set-brush (intersection-color (trace-ray ray scene)) 'solid)
+                (send bdc draw-rectangle x y 1 1))
+          'nop
+        ))))
     (displayln "Done, look at that great rendering:")
     image
     ))

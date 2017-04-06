@@ -1,7 +1,7 @@
 #lang racket
 (provide (all-defined-out))
 
-(require "geometry.rkt" "helpers.rkt")
+(require "geometry.rkt" "objects.rkt" "helpers.rkt")
 
 (struct camera (position
                 ; These vectors must be normalized
@@ -10,7 +10,7 @@
                 ; image being rendered
                 width height))
 
-(struct light (direction))
+(struct light (direction color intensity))
 
 (struct scene (camera objects lights))
 
@@ -39,13 +39,23 @@
                              (vec-scale upvec
                                         (- (/ (* 2 y) height) 1)))))))
 
+; Intersect the given ray with the scene
+(define (intersect-ray ray scene)
+  (let* ( (objects (scene-objects scene))
+          (ray-intersections (map (lambda (obj) (send obj intersect ray)) objects)) )
+    (filter (lambda (x) (and (not (not x)) (positive? (intersection-distance x)))) ray-intersections)))
+
 ; Trace the given ray
 (define (trace-ray ray scene)
-  (let* ( (objects (scene-objects scene))
-          (ray-intersections (map (lambda (obj) (send obj intersect ray)) objects))
-          (intersections (filter (lambda (x) (and (not (not x)) (positive? (car x)))) ray-intersections)) )
-    (if (and intersections (not (null? intersections)) (pair? (car intersections)))
-        (cdr (smallest car intersections))
+  (let* ( (intersections (intersect-ray ray scene)) )
+    (if (not (null? intersections))
+        (let ((intersection (smallest intersection-distance intersections))
+              (lights (scene-lights scene)))
+          (for ([light lights])
+            ;(define light_power (vec-dot ())
+            'nop
+            )
+          intersection
+          )
         #f
-    )
-  ))
+    )))

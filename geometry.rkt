@@ -84,3 +84,9 @@
   (vec (point-x point)
        (point-y point)
        (point-z point)))
+
+; Convert a vector to a point
+(define (vec->point vec)
+  (point (vec-x vec)
+         (vec-y vec)
+         (vec-z vec)))
