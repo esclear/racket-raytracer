@@ -37,7 +37,7 @@
                              (vec-scale rightvec
                                         (- (/ (* 2 x) width ) 1))
                              (vec-scale upvec
-                                        (- (/ (* 2 y) height) 1)))))))
+                                        (- 1 (/ (* 2 y) height))))))))
 
 ; Intersect the given ray with the scene
 (define (intersect-ray ray scene)
@@ -51,24 +51,26 @@
     (if (not (null? intersections))
         (let* ( (ray-intersection (smallest intersection-distance intersections))
                 (iobject (intersection-object ray-intersection))
-                (ipoint  (intersection-point  ray-intersection))
                 (inormal (intersection-normal ray-intersection))
-                
+                ; We add some tiny vector in the direction of the normal in order not to have black pixels on lit surfaces, because due to
+                ; the inexact nature of floats the coordinates could be a little bit off and the lit surface cast a shadow on itself.
+                (ipoint  (vec->point (vec-add (intersection-point ray-intersection)
+                                              (vec-scale inormal 1E-13))))
+
                 (lights (scene-lights scene)) )
-          ;(for ([light lights])
-          (let ((light (car lights)))
+          (apply color-mix (map (lambda (light)
             ; Here we use lambert's cosine law, as explained in
             ; https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/diffuse-lambertian-shading
             (let* ( (to-light-direction (vec-reverse (light-direction light)))
                     (shadow-ray (ray ipoint to-light-direction))
                     (power (* (vec-dot inormal to-light-direction) (light-intensity light)))
                     (reflected (/ (material-reflectivity (send iobject get-material)) pi))
-                    (color (material-color (send iobject get-material))) )
+                    (color (material-color (send iobject get-material)))
+                    (lightyness (if (not (null? (intersect-ray shadow-ray scene))) 0 1)) )
 
-              (color-scale (* power reflected)
+              (color-scale (* power reflected lightyness)
                            (color-mul color (light-color light)))
               ))
-          ;(material-color (send iobject get-material))
-          )
+          lights)))
         #f
         )))

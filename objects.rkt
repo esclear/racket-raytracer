@@ -67,12 +67,13 @@
                        ((< ta 0) tb)
                        ((< tb 0) ta)
                        (else (if (< ta tb) ta tb)))))
-               (let ((point (vec-add (point->vec (ray-point ray))
-                                     (vec-scale (ray-direction ray) distance))))
-                 (intersection distance
-                               point
-                               (intersection-normal point)
-                               this))))))
+               (and distance
+                    (let ((point (vec-add (point->vec (ray-point ray))
+                                          (vec-scale (ray-direction ray) distance))))
+                      (intersection distance
+                                    point
+                                    (intersection-normal point)
+                                    this)))))))
 
     (define/public (intersection-normal point)
       (vec-normalize (vec-sub point
@@ -115,4 +116,4 @@
                              this)))))
 
     (define/public (intersection-normal point)
-      (vec-reverse (vec-normalize current-normal)))))
+      (vec-normalize current-normal))))

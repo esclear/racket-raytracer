@@ -11,19 +11,13 @@
         (grey   (material (color 0.5 0.5 0.5) 1.5))
         (white  (material (color 1 1 1) 2)))
     (scene (setup-camera)
-           (list (new sphere% [center (point 1.5 1 1.5)]   [radius 1]   [material grey])
-                 (new sphere% [center (point -1 -0.5 3.2)] [radius 1.2] [material blue])
+           (list (new sphere% [center (point 0 0 4)] [radius 2] [material green])
+                 (new sphere% [center (point 1 -1 3)] [radius 1] [material red])
 
-                 ;(new plane% [point (point 0 0 0)] [normal (vec 0 1 0)] [material white])
-                 (new plane% [point (point 0 0 5)] [normal (vec 0 0 1)] [material white])
-                 ;(new plane% [point (point 0 5 0)] [normal (vec 0 1 0)] [material white])
-
-                 ;(new plane% [point (point 0 0 2)] [normal (vec 0 0 1)] [material yellow])
-
-                 ;(new plane% [point (point 3 1 0)]  [normal (vec 1 0 0)] [material red])
-                 (new plane% [point (point -3 1 0)] [normal (vec 1 0 0)] [material green])
-                 )
-           (list (light (vec 1 2 0.5) (color 1 1 1) 2.5)))))
+                 (new plane% [point (point 0 -1.5 15)] [normal (vec 0 1 0)] [material grey])
+                 );(new plane% [point (point 0 -1 0)] [normal (vec 0 0 1)] [material grey]))
+           (list (light (vec 1 -1 1) (color 1 1 1) 1.8)
+                 (light (vec -1 -1 -1) (color 1 1 1) 2)))))
 
 (define (setup-camera)
   (camera (origin)

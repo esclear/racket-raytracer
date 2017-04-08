@@ -38,3 +38,11 @@
       (exact-round (* 255 (color-red   clamped-color)))
       (exact-round (* 255 (color-green clamped-color)))
       (exact-round (* 255 (color-blue  clamped-color))))))
+
+(define (color-add . colors)
+  (color (foldl + 0 (map color-red   colors))
+         (foldl + 0 (map color-green colors))
+         (foldl + 0 (map color-blue  colors))))
+
+(define (color-mix . colors)
+  (color-scale (/ (length colors)) (apply color-add colors)))
