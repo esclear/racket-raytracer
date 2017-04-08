@@ -117,3 +117,59 @@
 
     (define/public (intersection-normal point)
       (vec-normalize current-normal))))
+
+; A triangle defined by its three corners
+(define triangle%
+  (class* renderable% (raytrace-interface)
+
+    (init a b c)
+
+    (define current-a a)
+    (define current-b b)
+    (define current-c c)
+
+    (super-new)
+
+    (define/public (get-a) current-a)
+    (define/public (get-b) current-b)
+    (define/public (get-c) current-c)
+
+    (define/public (set-a a)
+      (set! current-a a))
+    (define/public (set-b b)
+      (set! current-b b))
+    (define/public (set-c c)
+      (set! current-c c))
+
+    ; Behold!
+    ; This is an implementation of the Möller-Trumbone algorithm.
+    ; It looks a little bit strange, but it was more or less optimized
+    ; for speed, as much as it was possible in a trial-and-error fashion
+    ; in racket.
+    (define/public (intersect ray)
+      (let* ( (rdir  (ray-direction ray))
+              (edge1 (vec-sub (point->vec current-b) (point->vec current-a)))
+              (edge2 (vec-sub (point->vec current-c) (point->vec current-a)))
+              (pvec  (vec-cross rdir edge2))
+              (det   (vec-dot edge1 pvec)) )
+        (and (not (< (abs det) 1E-12))
+             (let* ( (inv-det (/ det))
+                     (tvec    (vec-sub (point->vec (ray-point ray))
+                                       (point->vec current-a)))
+                     (u       (* inv-det (vec-dot tvec pvec))) )
+               (and (not (or (< u 0) (> u 1)))
+                    (let* ( (qvec (vec-cross tvec edge1))
+                            (v    (* inv-det (vec-dot rdir qvec))) )
+                      (and (not (or (< v 0) (> (+ u v) 1)))
+                           (let* ( (distance  (* inv-det (vec-dot edge2 qvec)))
+                                   (point (vec-add (point->vec (ray-point ray))
+                                                   (vec-scale (ray-direction ray) distance))) )
+                             (intersection distance
+                                           point
+                                           (intersection-normal point)
+                                           this)))))
+               ))))
+
+    (define/public (intersection-normal point)
+      (vec-normalize (vec-cross (vec-sub (point->vec current-c) (point->vec current-a))
+                                (vec-sub (point->vec current-b) (point->vec current-a)))))))

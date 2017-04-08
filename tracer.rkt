@@ -5,16 +5,18 @@
 ; hehe, that name :)
 (define (make-scene)
   (let ((red    (material (color 1 0 0) 1))
-        (green  (material (color 0 1 0) 1))
+        (green  (material (color 0.1 1 0) 1))
         (blue   (material (color 0 0 1) 1.75))
         (yellow (material (color 1 1 0) 1))
         (grey   (material (color 0.5 0.5 0.5) 1.5))
         (white  (material (color 1 1 1) 2)))
     (scene (setup-camera)
-           (list (new sphere% [center (point 0 0 4)] [radius 2] [material green])
-                 (new sphere% [center (point 1 -1 3)] [radius 1] [material red])
+           (list ;(new sphere% [center (point 0 0 4)] [radius 2] [material green])
+                 (new sphere% [center (point 1 -2 3)] [radius 1] [material red])
 
                  (new plane% [point (point 0 -1.5 15)] [normal (vec 0 1 0)] [material grey])
+
+                 (new triangle% [a (point -1 -0.4 3)] [b (point 1 -0.2 1.8)] [c (point 0 1.5 4.2)] [material green])
                  );(new plane% [point (point 0 -1 0)] [normal (vec 0 0 1)] [material grey]))
            (list (light (vec 1 -1 1) (color 1 1 1) 1.8)
                  (light (vec -1 -1 -1) (color 1 1 1) 2)))))
@@ -24,7 +26,7 @@
           ; Vectors describing the rotation of the camera,
           ; to be produced by a custom translation matrix
           ; or simmilar.
-          (vec 0 0 1) (vec (/ 4 3) 0 0) (vec 0 1 0)
+          (vec 0 0 1) (vec 2 0 0) (vec 0 1.5 0)
           ; The glorious 800x600 pixel resolution
           800 600))
 

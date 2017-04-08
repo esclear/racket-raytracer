@@ -66,7 +66,7 @@
                     (power (* (vec-dot inormal to-light-direction) (light-intensity light)))
                     (reflected (/ (material-reflectivity (send iobject get-material)) pi))
                     (color (material-color (send iobject get-material)))
-                    (lightyness (if (not (null? (intersect-ray shadow-ray scene))) 0 1)) )
+                    (lightyness (if (null? (intersect-ray shadow-ray scene)) 1 0)) )
 
               (color-scale (* power reflected lightyness)
                            (color-mul color (light-color light)))
