@@ -4,6 +4,8 @@ The intention was not to write a very efficient, top-of-the-line rendering progr
 but instead work out by myself most of the standard ray-tracing techniques and
 the features of racket.
 
+![example image](images/fhd-sample.png)
+
 ## What it does
 * Rendering of simple primitives
   * Spheres
