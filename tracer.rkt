@@ -11,15 +11,15 @@
         (grey   (material (color 0.5 0.5 0.5) 1.5))
         (white  (material (color 1 1 1) 2)))
     (scene (setup-camera)
-           (list ;(new sphere% [center (point 0 0 4)] [radius 2] [material green])
+           (list (new sphere% [center (point 0 0 4)] [radius 0.5] [material green])
                  (new sphere% [center (point 1 -2 3)] [radius 1] [material red])
 
-                 (new plane% [point (point 0 -1.5 15)] [normal (vec 0 1 0)] [material grey])
+                 (new triangle% [a (point -2.5 -0.4 3)] [b (point -0.5 -0.2 1.8)] [c (point -1.5 1.5 4.2)] [material green])
 
-                 (new triangle% [a (point -1 -0.4 3)] [b (point 1 -0.2 1.8)] [c (point 0 1.5 4.2)] [material green])
-                 );(new plane% [point (point 0 -1 0)] [normal (vec 0 0 1)] [material grey]))
-           (list (light (vec 1 -1 1) (color 1 1 1) 1.8)
-                 (light (vec -1 -1 -1) (color 1 1 1) 2)))))
+                 ; Boden
+                 (new plane% [point (point 0 -1.5 0)] [normal (vec 0 1 0)] [material grey]))
+           (list (light (vec -1 -1 0.25) (color 1 1 1) 2)
+                 (light (vec 1 -1 1) (color 1 1 1) 1.8)))))
 
 (define (setup-camera)
   (camera (origin)

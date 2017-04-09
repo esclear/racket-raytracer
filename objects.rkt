@@ -50,30 +50,40 @@
       (set! current-radius radius))
 
     (define/public (intersect ray)
-      (let* ((sqr (* current-radius current-radius))
-             
-             (con (vec-sub (point->vec current-center)
-                           (point->vec (ray-point ray))))
-             (adj (vec-dot con (ray-direction ray)))
-             (d2  (- (vec-dot con con) (* adj adj))))
-
-        (and (< d2 sqr)
-             (let* ((ts (sqrt (- sqr d2)))
-                    (ta (- adj ts))
-                    (tb (+ adj ts))
-                    (distance
-                     (cond
-                       ((and (< ta 0) (< tb 0)) #f)
-                       ((< ta 0) tb)
-                       ((< tb 0) ta)
-                       (else (if (< ta tb) ta tb)))))
-               (and distance
-                    (let ((point (vec-add (point->vec (ray-point ray))
-                                          (vec-scale (ray-direction ray) distance))))
-                      (intersection distance
-                                    point
-                                    (intersection-normal point)
-                                    this)))))))
+      (let* ( (vcenter (point->vec current-center))
+              (radius  current-radius)
+              (rpoint  (point->vec (ray-point ray)))
+              (rdir    (ray-direction ray))
+              (vpc     (vec-sub vcenter rpoint)) )
+        (if (negative? (vec-dot vpc rdir))
+            (and (<= (vec-len vpc) radius)
+                 (if (= (vec-len vpc) radius)
+                     (intersection 0 rpoint (intersection-normal rpoint) this)
+                     (let* ( (pc  (point->vec (pora-project current-center ray)))
+                             (pcl (vec-len (vec-sub pc vcenter)))
+                             (locdist  (sqrt (- (* radius radius)
+                                                (* pcl pcl))))
+                             (distance (- locdist (vec-len (vec-sub pc rpoint))))
+                             (point (vec-add (point->vec (ray-point ray))
+                                             (vec-scale (ray-direction ray) distance))) )
+                       (intersection distance
+                                     point
+                                     (intersection-normal point)
+                                     this))))
+            (let* ( (pc  (point->vec (pora-project current-center ray)))
+                    (pcl (vec-len (vec-sub pc vcenter))) )
+              (and (<= pcl radius)
+                   (let* ( (locdist  (sqrt (- (* radius radius)
+                                              (* pcl pcl))))
+                           (distance (if (> (vec-len vpc) radius)
+                                         (- (vec-len (vec-sub pc rpoint)) locdist)
+                                         (+ (vec-len (vec-sub pc rpoint)) locdist)))
+                           (point (vec-add (point->vec (ray-point ray))
+                                           (vec-scale (ray-direction ray) distance))) )
+                     (intersection distance
+                                   point
+                                   (intersection-normal point)
+                                   this)))))))
 
     (define/public (intersection-normal point)
       (vec-normalize (vec-sub point

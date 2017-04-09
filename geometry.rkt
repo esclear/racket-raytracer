@@ -97,3 +97,13 @@
   (point (vec-x vec)
          (vec-y vec)
          (vec-z vec)))
+
+; Project a point onto a ray
+(: pora-project (-> point ray point))
+(define (pora-project ppoint ray)
+  (let* ( (rpoint (point->vec (ray-point ray)))
+          (pvec (point->vec ppoint))
+          (uvec (vec-sub pvec rpoint))
+          (vvec (vec-normalize (ray-direction ray))) )
+  (vec->point (vec-add rpoint
+                       (vec-scale vvec (vec-dot vvec uvec))))))

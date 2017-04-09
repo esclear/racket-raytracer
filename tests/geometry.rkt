@@ -33,5 +33,8 @@
 (check-expect (vec-reflect (vec 1 1 -1) (vec 0 0 1)) (vec 1 1 1))
 (check-expect (vec-reflect (vec 0 0 -1) (vec 0 0 1)) (vec 0 0 1))
 
-; Find out how to check this
-;(check-expect (vec-reflect (vec 1 -3 4) (vec 2 4 1)) (vec 2.1428571428571432 -0.7142857142857135 4.571428571428571))
+; Point projection
+(check-expect (pora-project (origin) (ray (origin) (vec 1 2 3))) (origin))
+(check-expect (pora-project (point 4 1 2) (ray (origin) (vec 1 0 0))) (point 4 0 0))
+(check-expect (pora-project (point 4 1 2) (ray (point 2 0 0) (vec 1 0 0))) (point 4 0 0))
+(check-expect (pora-project (point 4 1 2) (ray (point 2 1 0) (vec 1 0 0))) (point 4 1 0))
